@@ -10,7 +10,14 @@ $StatePath = Join-Path $ExpectedRoot ".master\state\executor.json"
 
 function Invoke-Git {
     param([Parameter(Mandatory = $true)][string[]]$Arguments)
-    $output = & git @Arguments 2>&1
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = & git @Arguments 2>&1
+    }
+    finally {
+        $ErrorActionPreference = $previousPreference
+    }
     if ($LASTEXITCODE -ne 0) {
         throw "git $($Arguments -join ' ') failed: $($output -join [Environment]::NewLine)"
     }
