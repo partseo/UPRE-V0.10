@@ -53,6 +53,12 @@ NO. Runtime dependencies installed: 0. Analyzer implementation: 0.
 
 MASTER approval is required before sample Program Model visualization. Adapter runtime/version selection remains unresolved.
 
+## Authorized Research Mode Addendum
+
+AR01~AR07 PASS. Partial block, safe continuation, status separation, policy/Core separation, human gate, logging and PHASE 0B compatibility are defined in `docs/05_AUTHORIZED_RESEARCH_MODE.md`. Research Orchestrator owns Action-level policy decisions and safe substitutes. Program Model remains a technology-neutral factual model and does not contain the safety engine.
+
+Core Schema changes for this addendum: `0`. Runtime implementation: `0`. Existing G01~G10 remain authoritative. Revalidation: `node tests/validate-fixtures.mjs`, exit `0`, `8/8 PASS`, executed `2026-08-29T07:18:42.700Z`. AR01~AR07 static contract checks: `7/7 PASS`.
+
 ## False-Pass Risk
 
 The dependency-free validator enforces the PHASE 0B structural and semantic boundary but is not a general-purpose JSON Schema engine. Future schema keywords require matching validator tests or an approved validator dependency. Runtime artifacts were not exercised because they are out of scope.

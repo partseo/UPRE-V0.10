@@ -1,3 +1,5 @@
 {"project":"UPRE-V0.10","phase":"PHASE-0A","slice":"BOOTSTRAP","status":"RUNNING","event":"BOOTSTRAP_INITIALIZED","detail":"New official workspace and Git review baseline initialization started."}
 {"project":"UPRE-V0.10","phase":"PHASE-0B","slice":"SCHEMA_AND_FIXTURE","status":"FAIL","event":"VALIDATION_RED_CONFIRMED","detail":"Expected RED: 7 tests, 3 passed, 4 failed because semantic validator was not implemented."}
 {"project":"UPRE-V0.10","phase":"PHASE-0B","slice":"SCHEMA_AND_FIXTURE","status":"PASS","event":"VALIDATION_PASS_8_OF_8","detail":"Schema contracts, positive fixture, three negative fixtures, relation coverage, and architecture isolation passed with exit code 0."}
+{"project":"UPRE-V0.10","phase":"PHASE-0B","slice":"AUTHORIZED_RESEARCH_CONTRACT","status":"PASS","event":"RESEARCH_ACTION_ALLOWED","action":"document action-level research orchestration contract","continued":true}
+{"project":"UPRE-V0.10","phase":"PHASE-0B","slice":"AUTHORIZED_RESEARCH_CONTRACT","status":"PASS","event":"RESEARCH_CONTINUED","detail":"AR01-AR07 documented without Core Schema or runtime changes.","continued":true}

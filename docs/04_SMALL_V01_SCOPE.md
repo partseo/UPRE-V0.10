@@ -17,7 +17,7 @@ PHASE: PHASE-0B
 | G07 | Adapter extensibility | source adapter categories |
 | G08 | Evidence/Asset/OSS extensibility | 독립 entities와 provenance |
 | G09 | Fixture relationship coverage | required entities, chain, supporting evidence |
-| G10 | Executed validation | `node tests/validate-fixtures.mjs`, exit 0, 7/7 |
+| G10 | Executed validation | `node tests/validate-fixtures.mjs`, exit 0, 8/8 |
 
 하나라도 실패하면 PHASE 0B는 FAIL이다. G05, G06, G10은 Critical이다.
 
@@ -28,3 +28,17 @@ Archify Runtime, React Flow Runtime, Playwright, Tree-sitter, ast-grep, Joern, N
 ## Next Gate
 
 MASTER 승인 전에는 sample Program Model 시각화 단계로 진행하지 않는다.
+
+## Authorized Research Mode Addendum
+
+PHASE 0B에는 runtime policy engine을 구현하지 않는다. `docs/05_AUTHORIZED_RESEARCH_MODE.md`의 Architecture Contract와 monitor receipt만 추가한다. 기존 G01~G10, 특히 Core independence와 실행 validation이 우선한다.
+
+| Gate | Criterion |
+| --- | --- |
+| AR01 | Partial Block가 Action 단위로 정의됨 |
+| AR02 | Safe Continuation과 substitute가 정의됨 |
+| AR03 | UNKNOWN, NOT_OBSERVABLE, BLOCKED가 구분됨 |
+| AR04 | Program Model과 Research Policy가 분리됨 |
+| AR05 | Human Gate 조건이 정의됨 |
+| AR06 | Research event logging contract가 정의됨 |
+| AR07 | G01~G10과 충돌하지 않고 Core Schema가 변경되지 않음 |

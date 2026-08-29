@@ -38,3 +38,33 @@ position, selection, viewport, handle 등 편집기 상태는 adapter-owned다. 
 ## AI Boundary
 
 AI는 교체 가능한 Inference Adapter다. Core에는 provider/model/inference receipt만 provenance로 남고 특정 SDK나 prompt format은 포함하지 않는다.
+
+## Authorized Research Orchestration Boundary
+
+Research Orchestrator는 `OBSERVE → EXTRACT → MODEL → INFER → VERIFY → MODIFY → REIMPLEMENT`의 각 Action을 독립적으로 판정한다. 판정은 `ALLOWED`, `LIMITED`, `BLOCKED`, `HUMAN_REQUIRED`이며, 상위 Task 결과와 분리한다.
+
+```text
+Research Action
+  → policy decision
+  → allowed action OR safe substitute OR human gate
+  → Observation/Evidence
+  → Normalizer
+  → Program Model
+```
+
+하나의 Action이 `BLOCKED`여도 나머지 정상 사용자 경로는 `CONTINUE_SAFE_PATH`로 계속한다. Orchestrator는 credential extraction, authentication bypass 또는 비인가 접근을 다른 분석 Action과 분리하고, 정상 authenticated observation, synthetic data, public client code, observed network contract 같은 safe substitute를 선택한다.
+
+Program Model은 Safety Engine이 아니다. 정책 판정·거부 사유·substitute 선택은 orchestration receipt와 monitor가 소유한다. Program Model에는 분석 의미상 필요한 최소 `observation_status`, `availability_status`, `verification_status`, Evidence, Provenance만 전달할 수 있다. Truth classification과 실행 상태는 서로 대체하지 않는다.
+
+## Research Event Contract
+
+Orchestrator는 다음 event를 append-only monitor에 기록한다.
+
+- `RESEARCH_ACTION_ALLOWED`
+- `RESEARCH_ACTION_LIMITED`
+- `RESEARCH_ACTION_BLOCKED`
+- `SAFE_SUBSTITUTE_SELECTED`
+- `USER_VERIFICATION_REQUIRED`
+- `RESEARCH_CONTINUED`
+
+각 event는 action, decision, reason category, affected model area, safe substitute, continued 여부를 지원한다. Secret, token, cookie, credential 또는 실제 사용자 데이터 값은 기록하지 않는다.
