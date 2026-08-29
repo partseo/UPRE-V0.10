@@ -1,7 +1,7 @@
 {
   "project": "UPRE-V0.10",
-  "processed_ids": ["DIR-0001"],
+  "processed_ids": ["DIR-0001", "DIR-0002"],
   "current_command_id": null,
   "current_status": "COMPLETE",
-  "last_heartbeat": "2026-08-29T08:25:36Z"
+  "last_heartbeat": "2026-08-29T09:03:35Z"
 }

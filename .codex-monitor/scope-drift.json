@@ -6,5 +6,6 @@
   "detected": false,
   "items": [],
   "runtime_dependencies_installed": 0,
+  "dev_test_dependencies_installed": 2,
   "analyzer_implementation": 0
 }

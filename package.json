@@ -1,0 +1,13 @@
+{
+  "name": "upre-v0.10-contract-validation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/validate-fixtures.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  }
+}

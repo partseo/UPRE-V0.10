@@ -1,0 +1,11 @@
+{
+  "case_id": "NEG-05",
+  "expected_layer": "SCHEMA",
+  "expected_keyword": "unevaluatedProperties",
+  "mutation": {
+    "collection": "screens",
+    "entity_id": "customer-list",
+    "field": "renderer",
+    "value": {"shape": "archify-box"}
+  }
+}

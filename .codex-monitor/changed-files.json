@@ -3,16 +3,23 @@
   "phase": "PHASE-0B",
   "slice": "SCHEMA_AND_FIXTURE",
   "status": "REVIEW_READY",
-  "file_count": 9,
+  "file_count": 16,
   "files": [
-    ".codex-monitor/activity.ndjson",
     ".codex-monitor/changed-files.json",
-    ".codex-monitor/decisions.md",
-    ".codex-monitor/test-results.json",
     ".codex-monitor/MASTER_REVIEW_PACKET.md",
-    "docs/03_ADAPTER_CONTRACTS.md",
-    "docs/04_SMALL_V01_SCOPE.md",
-    "docs/05_AUTHORIZED_RESEARCH_MODE.md",
-    "reports/AUTHORIZED_RESEARCH_MODE_GATE_REPORT.md"
+    ".codex-monitor/scope-drift.json",
+    ".codex-monitor/test-results.json",
+    "docs/01_PROGRAM_MODEL_SCHEMA.md",
+    "fixtures/invalid/neg-01-missing-screen-reference.json",
+    "fixtures/invalid/neg-04-react-flow-position.json",
+    "fixtures/invalid/neg-05-archify-renderer-metadata.json",
+    "fixtures/sample-program-model.json",
+    "package-lock.json",
+    "package.json",
+    "reports/PHASE_0B_GATE_REPORT.md",
+    "schemas/program-model.schema.json",
+    "tests/lib/json-schema-validator.mjs",
+    "tests/lib/model-validator.mjs",
+    "tests/validate-fixtures.mjs"
   ]
 }

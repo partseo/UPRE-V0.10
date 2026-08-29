@@ -20,7 +20,7 @@ LogicRule, ProtectedAsset, OSSReference도 독립 entity다. Evidence와 Decisio
 
 ## Semantic Relations
 
-Relation은 ID/type/source/target와 origin, evidence, confidence, verification, provenance를 가진다. 의미는 `CONTAINS`, `TRIGGERS`, `NAVIGATES_TO`, `READS`, `WRITES`, `DISPLAYS`, `USES`, `DEPENDS_ON`, `PART_OF_FLOW`, `SUPPORTED_BY`, `DERIVED_FROM`, `REPLACES` 중 하나다. Reference는 `TYPE:id` 형식이며 validator가 실제 존재 여부를 확인한다.
+Relation은 ID/type/source/target와 origin, truth, evidence, confidence, verification, provenance를 가진다. 의미는 `CONTAINS`, `TRIGGERS`, `NAVIGATES_TO`, `READS`, `WRITES`, `DISPLAYS`, `USES`, `DEPENDS_ON`, `PART_OF_FLOW`, `SUPPORTED_BY`, `DERIVED_FROM`, `REPLACES` 중 하나다. Reference는 `TYPE:id` 형식이며 validator가 실제 존재 여부를 확인한다. Relation의 Truth 정책은 Entity와 동일하며 INFERRED, USER_VERIFIED, CONFLICT의 Evidence·provenance 조건은 JSON Schema와 Semantic Validator가 각각 fail-closed로 검사한다.
 
 ## Truth Classification
 
@@ -42,8 +42,8 @@ Relation은 ID/type/source/target와 origin, evidence, confidence, verification,
 - `WORKING_MODEL`: 선행 snapshot을 참조하는 사용자 수정본. `immutable=false`.
 - `GENERATED_MODEL`: Working snapshot을 기반으로 Sanitizer 상태를 가진 불변 생성 입력.
 
-모델은 overwrite가 아니라 snapshot과 revision ID로 연결한다. Original 수정은 validator가 거부한다.
+모델은 overwrite가 아니라 snapshot과 revision ID로 연결한다. 각 Snapshot은 전역 객체 reference가 아니라 완전한 값 사본을 가진 `entity_version`/`relation_version` ID를 참조한다. 하나의 값 version을 둘 이상의 Snapshot이 공유하면 Semantic Validator가 거부하므로 Entity와 Relation 모두 Working 변경은 Original 값에, Generated 변경은 Working 또는 Original 값에 역전파될 수 없다. Original 수정도 validator가 거부한다.
 
 ## External Engine Isolation
 
-Core schema에는 특정 viewer, editor, browser automation, UI 좌표 또는 renderer metadata가 없다. 외부 형식은 Projection/Visual Adapter가 생성하고 역변환한다.
+Core schema에는 특정 viewer, editor, browser automation, UI 좌표 또는 renderer metadata가 없다. 합성 Entity는 Draft 2020-12 `unevaluatedProperties: false`로 폐쇄되며, Entity version 내부 값에도 같은 규칙이 적용된다. 외부 형식은 Projection/Visual Adapter가 생성하고 역변환한다.

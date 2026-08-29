@@ -5,8 +5,10 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 import { validateModel } from "./lib/model-validator.mjs";
+import { createSchemaValidator, schemaErrors } from "./lib/json-schema-validator.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const validateSchema = await createSchemaValidator(root);
 const tests = [];
 
 function test(name, execute) {
@@ -17,7 +19,7 @@ async function readJson(relativePath) {
   return JSON.parse(await readFile(path.join(root, relativePath), "utf8"));
 }
 
-test("schemas parse as JSON Schema 2020-12 contracts", async () => {
+test("Layer A compiles all Draft 2020-12 schemas", async () => {
   const files = [
     "schemas/program-model.schema.json",
     "schemas/observation.schema.json",
@@ -39,6 +41,8 @@ test("schemas declare required entities, truth, state, evidence, and adapter con
   const decisionSchema = await readJson("schemas/decision.schema.json");
   for (const definition of ["screen", "component", "action", "behavior", "flow", "dataEntity", "logicRule", "protectedAsset", "ossReference", "relation", "modelSnapshot", "modelRevision"]) assert(definition in programSchema.$defs);
   assert.deepEqual(programSchema.$defs.truthClassification.enum, ["OBSERVED", "DERIVED", "INFERRED", "USER_VERIFIED", "CONFLICT"]);
+  assert(programSchema.$defs.relation.required.includes("truth"));
+  assert.equal(programSchema.$defs.screen.unevaluatedProperties, false);
   assert(programSchema.$defs.modelSnapshot.allOf.some(({ if: condition }) => condition?.properties?.model_kind?.const === "ORIGINAL_MODEL"));
   for (const field of ["evidence_id", "type", "source_adapter", "subject_ref", "locator", "captured_at", "digest", "confidence"]) assert(evidenceSchema.required.includes(field));
   for (const adapter of ["WEB_DOM", "WINDOWS_UIA", "SOURCE_AST", "DOCUMENT", "RUNTIME", "USER"]) assert(observationSchema.$defs.sourceAdapter.enum.includes(adapter));
@@ -47,6 +51,7 @@ test("schemas declare required entities, truth, state, evidence, and adapter con
 
 test("positive fixture passes structural and semantic validation", async () => {
   const model = await readJson("fixtures/sample-program-model.json");
+  assert.equal(validateSchema(model), true, JSON.stringify(schemaErrors(validateSchema)));
   assert.deepEqual(validateModel(model), []);
 });
 
@@ -66,6 +71,70 @@ test("positive fixture covers required entities and customer relation chain", as
   assert.equal(model.entities.oss_references.length > 0, true);
   assert.equal(model.decisions.length > 0, true);
   assert.equal(model.model_revisions.length, 3);
+});
+
+test("snapshot entity values remain isolated across original, working, and generated models", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  const valuesById = new Map(model.entity_versions.map((version) => [version.entity_version_id, version.value]));
+  const snapshotsByKind = new Map(model.snapshots.map((snapshot) => [snapshot.model_kind, snapshot]));
+  const original = valuesById.get(snapshotsByKind.get("ORIGINAL_MODEL").entity_version_refs.find((ref) => ref.includes("customer-list")));
+  const working = valuesById.get(snapshotsByKind.get("WORKING_MODEL").entity_version_refs.find((ref) => ref.includes("customer-list")));
+  const generated = valuesById.get(snapshotsByKind.get("GENERATED_MODEL").entity_version_refs.find((ref) => ref.includes("customer-list")));
+
+  working.name = "Working Customer Directory";
+  assert.equal(original.name, "Customer List");
+  generated.name = "Generated Customer Directory";
+  assert.equal(original.name, "Customer List");
+  assert.equal(working.name, "Working Customer Directory");
+});
+
+test("semantic validation rejects a value version shared across snapshots", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  const original = model.snapshots.find(({ model_kind }) => model_kind === "ORIGINAL_MODEL");
+  const working = model.snapshots.find(({ model_kind }) => model_kind === "WORKING_MODEL");
+  working.entity_version_refs = [...original.entity_version_refs];
+  const codes = validateModel(model).map(({ code }) => code);
+  assert(codes.includes("VERSION_SHARED_ACROSS_SNAPSHOTS"), codes.join(", "));
+});
+
+test("snapshot relation values remain isolated across original, working, and generated models", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  const valuesById = new Map(model.relation_versions.map((version) => [version.relation_version_id, version.value]));
+  const snapshotsByKind = new Map(model.snapshots.map((snapshot) => [snapshot.model_kind, snapshot]));
+  const original = valuesById.get(snapshotsByKind.get("ORIGINAL_MODEL").relation_version_refs.find((ref) => ref.includes("screen-search")));
+  const working = valuesById.get(snapshotsByKind.get("WORKING_MODEL").relation_version_refs.find((ref) => ref.includes("screen-search")));
+  const generated = valuesById.get(snapshotsByKind.get("GENERATED_MODEL").relation_version_refs.find((ref) => ref.includes("screen-search")));
+
+  working.target_ref = "COMPONENT:sidebar";
+  assert.equal(original.target_ref, "COMPONENT:search-panel");
+  generated.target_ref = "COMPONENT:customer-table";
+  assert.equal(original.target_ref, "COMPONENT:search-panel");
+  assert.equal(working.target_ref, "COMPONENT:sidebar");
+});
+
+test("semantic validation rejects a relation version shared across snapshots", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  const original = model.snapshots.find(({ model_kind }) => model_kind === "ORIGINAL_MODEL");
+  const working = model.snapshots.find(({ model_kind }) => model_kind === "WORKING_MODEL");
+  working.relation_version_refs = [...original.relation_version_refs];
+  const codes = validateModel(model).map(({ code }) => code);
+  assert(codes.includes("VERSION_SHARED_ACROSS_SNAPSHOTS"), codes.join(", "));
+});
+
+test("relation truth policies match entity truth policies", async () => {
+  const base = await readJson("fixtures/sample-program-model.json");
+  const cases = [
+    ["INFERRED", ["EV-search-button"], [{ method: "INFERRED", source_adapter: "AI_INFERENCE" }], "INFERRED_REQUIRES_EVIDENCE_AND_INFERENCE_PROVENANCE"],
+    ["CONFLICT", ["EV-search-button"], [{ method: "OBSERVED", source_adapter: "WEB_ACCESSIBILITY" }], "CONFLICT_REQUIRES_MULTIPLE_EVIDENCE"],
+    ["USER_VERIFIED", ["EV-search-button"], [{ method: "OBSERVED", source_adapter: "WEB_ACCESSIBILITY" }], "USER_VERIFIED_REQUIRES_USER_PROVENANCE"]
+  ];
+  for (const [truth, evidenceIds, provenance, expectedCode] of cases) {
+    const model = structuredClone(base);
+    Object.assign(model.relations[0], { truth, evidence_ids: evidenceIds, provenance });
+    assert.equal(validateSchema(model), false, `${truth} relation unexpectedly passed Layer A`);
+    const codes = validateModel(model).map(({ code }) => code);
+    assert(codes.includes(expectedCode), `Expected ${expectedCode}; received ${codes.join(", ")}`);
+  }
 });
 
 for (const [file, expectedCode] of [
@@ -88,6 +157,18 @@ test("core schemas contain no external viewer or editor vocabulary", async () =>
     for (const token of forbidden) assert.equal(content.includes(token), false, `${file} contains ${token}`);
   }
 });
+
+for (const file of ["neg-04-react-flow-position.json", "neg-05-archify-renderer-metadata.json"]) {
+  test(`${file} is rejected by the closed core contract`, async () => {
+    const fixture = await readJson(`fixtures/invalid/${file}`);
+    const model = await readJson("fixtures/sample-program-model.json");
+    const entity = model.entities[fixture.mutation.collection].find(({ id }) => id === fixture.mutation.entity_id);
+    entity[fixture.mutation.field] = fixture.mutation.value;
+    assert.equal(validateSchema(model), false);
+    const errors = schemaErrors(validateSchema);
+    assert(errors.some(({ keyword, instancePath }) => keyword === fixture.expected_keyword && instancePath.startsWith("/entities/screens/")), JSON.stringify(errors));
+  });
+}
 
 let passed = 0;
 const failures = [];
