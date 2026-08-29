@@ -1,27 +1,36 @@
 # OSS Reuse Matrix
 
-STATUS: DRAFT
+STATUS: REVIEW_READY
 
-PHASE: PHASE-0
+PHASE: PHASE-0B
 
-NOT IMPLEMENTED
+조사일: 2026-08-29. 상세 4개 항목은 공식 GitHub 저장소와 라이선스 파일을 기준으로 확인했다. 채택 결정이 아니라 adapter 경계 결정이다.
 
-조사 전 후보 등록부이며, 아래 값은 재사용 또는 채택 결정을 의미하지 않는다.
+| Project | Capability | License | Current Structure | Potential Role | SMALL | MEDIUM | Adapter | Direct Reuse | Research Status | Decision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| [tt-a1i/archify](https://github.com/tt-a1i/archify) | 5종 typed diagram, validation, standalone HTML/export | MIT | agent skill, typed JSON IR, CLI/validators, examples, renderer; upstream stable v2.13.0 | Understand/validation projection | Architecture + Workflow proof | More views/live projection | Required | Renderer/validator after review | REVIEWED | ADAPTER; never Core |
+| [xyflow/xyflow](https://github.com/xyflow/xyflow) | Node-based React/Svelte editors | MIT | monorepo: `packages/react`, `packages/svelte`, `packages/system` | Visual Program Editor | Later edit proof | Rich editing/warehouse UX | Required | UI library after approval | REVIEWED | ADAPTER; editor state excluded |
+| [tree-sitter/tree-sitter](https://github.com/tree-sitter/tree-sitter) | Incremental, error-tolerant syntax parsing | MIT | Rust/C workspace, CLI, bindings, grammar ecosystem | Optional Source Analyzer | Not URL-first dependency | Source symbol extraction | Required | Library per grammar | REVIEWED | OPTIONAL_SOURCE_ADAPTER |
+| [ast-grep/ast-grep](https://github.com/ast-grep/ast-grep) | Structural AST search/lint/rewrite | MIT | Rust crates, CLI, npm bindings, schemas, fixtures | Optional structural analysis | Not URL-first dependency | Pattern observations | Required | CLI/library after rules review | REVIEWED | OPTIONAL_SOURCE_ADAPTER |
+| tecture-io/tecture | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Research reference | No runtime | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| likec4/likec4 | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Research reference | No runtime | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| structurizr/structurizr | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Research reference | No runtime | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| axumquant/arch-viewer | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Research reference | No runtime | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| joernio/joern | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Future deep source analysis | Excluded | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| cytoscape/cytoscape.js | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Alternative projection | No runtime | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
+| ashfordeOU/grasp | NOT_REVIEWED | NOT_REVIEWED | NOT_REVIEWED | Benchmark only | Excluded | Candidate | TBD | No | CANDIDATE_ONLY | RESEARCH_BACKLOG |
 
-| Project | Capability | License | Potential Role | SMALL | MEDIUM | Adapter | Direct Reuse | Research Status | Decision |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tt-a1i/archify | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| xyflow/xyflow | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| tree-sitter/tree-sitter | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| ast-grep/ast-grep | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| tecture-io/tecture | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| likec4/likec4 | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| structurizr/structurizr | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| axumquant/arch-viewer | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| joernio/joern | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| cytoscape/cytoscape.js | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
-| ashfordeOU/grasp | TBD | TBD | TBD | TBD | TBD | TBD | TBD | NOT_REVIEWED | PENDING |
+## Detailed Boundaries
 
-## Research Backlog
+- Archify IR, layout and rendering stay under `projections/archify` or an adapter-owned schema.
+- xyflow visual elements/events stay under `visual`; only semantic Model Commands reach Working Model.
+- Tree-sitter parse trees and ast-grep matches become source Observation/Evidence, never Core entities.
+- No reviewed runtime is installed in PHASE 0B.
 
-각 후보의 capability, license, version/commit, reusable modules, adapter 가능성, SMALL/MEDIUM relevance 및 제외 사유는 후속 research 단계에서 증거와 함께 기록한다.
+## Official Evidence
+
+- Archify repository, typed IR and current release: https://github.com/tt-a1i/archify
+- Archify MIT license: https://github.com/tt-a1i/archify/blob/main/LICENSE
+- xyflow monorepo and MIT license: https://github.com/xyflow/xyflow and https://github.com/xyflow/xyflow/blob/main/LICENSE
+- Tree-sitter structure and MIT license: https://github.com/tree-sitter/tree-sitter and https://github.com/tree-sitter/tree-sitter/blob/master/LICENSE
+- ast-grep structure and MIT license: https://github.com/ast-grep/ast-grep and https://github.com/ast-grep/ast-grep/blob/main/LICENSE

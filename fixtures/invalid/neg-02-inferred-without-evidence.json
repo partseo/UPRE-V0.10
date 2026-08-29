@@ -1,0 +1,14 @@
+{
+  "case_id": "NEG-02",
+  "expected_error": "INFERRED_REQUIRES_EVIDENCE_AND_INFERENCE_PROVENANCE",
+  "program_model": {
+    "schema_version": "0.1.0",
+    "program": {"id": "inferred", "name": "Unsupported Inference", "program_type": "OTHER", "origin": "ANALYSIS", "truth": "INFERRED", "evidence_ids": [], "confidence": 0.5, "verification_status": "UNVERIFIED", "provenance": [{"method": "INFERRED", "source_adapter": "AI_INFERENCE"}]},
+    "snapshots": [],
+    "model_revisions": [],
+    "entities": {"screens": [], "components": [], "actions": [], "behaviors": [], "flows": [], "data_entities": [], "logic_rules": [], "protected_assets": [], "oss_references": []},
+    "relations": [],
+    "evidence": [],
+    "decisions": []
+  }
+}

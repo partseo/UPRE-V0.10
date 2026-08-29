@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://upre.local/schemas/evidence.schema.json",
+  "title": "UPRE Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidence_id", "type", "source_adapter", "subject_ref", "locator", "captured_at", "digest", "confidence", "provenance"],
+  "properties": {
+    "evidence_id": {"type": "string", "pattern": "^EV-[A-Za-z0-9._-]+$"},
+    "type": {"enum": ["DOM", "ACCESSIBILITY", "NETWORK", "SCREENSHOT", "SOURCE", "DOCUMENT", "RUNTIME", "VISION", "USER", "RULE", "AI"]},
+    "source_adapter": {"$ref": "observation.schema.json#/$defs/sourceAdapter"},
+    "subject_ref": {"$ref": "program-model.schema.json#/$defs/entityRef"},
+    "locator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "value"],
+      "properties": {
+        "scheme": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1}
+      }
+    },
+    "value": {},
+    "captured_at": {"type": "string", "format": "date-time"},
+    "digest": {"type": "string", "pattern": "^[a-z0-9-]+:[A-Fa-f0-9]{8,}$"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "provenance": {"$ref": "program-model.schema.json#/$defs/provenance"}
+  }
+}

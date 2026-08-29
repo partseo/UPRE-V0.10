@@ -1,0 +1,94 @@
+{
+  "schema_version": "0.1.0",
+  "program": {
+    "id": "customer-care",
+    "name": "Customer Care Program",
+    "program_type": "WEB_APPLICATION",
+    "origin": "ANALYSIS",
+    "truth": "OBSERVED",
+    "evidence_ids": ["EV-program"],
+    "confidence": 1,
+    "verification_status": "VERIFIED",
+    "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY", "source_ref": "capture:customer-care"}]
+  },
+  "snapshots": [
+    {"snapshot_id": "SNAP-original-001", "model_kind": "ORIGINAL_MODEL", "based_on_snapshot_id": null, "immutable": true, "entity_refs": ["PROGRAM:customer-care", "SCREEN:login", "SCREEN:dashboard", "SCREEN:customer-list", "SCREEN:customer-detail", "SCREEN:consultation"], "relation_refs": ["REL-screen-search"], "created_at": "2026-08-29T06:00:00Z"},
+    {"snapshot_id": "SNAP-working-001", "model_kind": "WORKING_MODEL", "based_on_snapshot_id": "SNAP-original-001", "immutable": false, "entity_refs": ["PROGRAM:customer-care", "FLOW:customer-flow", "DECISION:DEC-verify-customer-flow"], "relation_refs": ["REL-search-trigger", "REL-action-behavior", "REL-behavior-flow", "REL-behavior-read"], "created_at": "2026-08-29T06:05:00Z"},
+    {"snapshot_id": "SNAP-generated-001", "model_kind": "GENERATED_MODEL", "based_on_snapshot_id": "SNAP-working-001", "immutable": true, "entity_refs": ["PROGRAM:customer-care", "FLOW:customer-flow"], "relation_refs": ["REL-behavior-flow"], "sanitizer_status": "REVIEW_REQUIRED", "created_at": "2026-08-29T06:10:00Z"}
+  ],
+  "model_revisions": [
+    {"revision_id": "REV-original-001", "snapshot_id": "SNAP-original-001", "parent_revision_id": null, "change_source": "ANALYSIS", "created_at": "2026-08-29T06:00:00Z"},
+    {"revision_id": "REV-working-001", "snapshot_id": "SNAP-working-001", "parent_revision_id": "REV-original-001", "change_source": "USER_DECISION", "created_at": "2026-08-29T06:05:00Z"},
+    {"revision_id": "REV-generated-001", "snapshot_id": "SNAP-generated-001", "parent_revision_id": "REV-working-001", "change_source": "SANITIZER", "created_at": "2026-08-29T06:10:00Z"}
+  ],
+  "entities": {
+    "screens": [
+      {"id": "login", "name": "Login", "purpose": "Authenticate a user", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-login"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "dashboard", "name": "Dashboard", "purpose": "Show the application overview", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-dashboard"], "confidence": 0.98, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "customer-list", "name": "Customer List", "purpose": "Search and browse customers", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-list"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "customer-detail", "name": "Customer Detail", "purpose": "Review a selected customer", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-detail"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "consultation", "name": "Consultation", "purpose": "Record customer consultation", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-consultation"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]}
+    ],
+    "components": [
+      {"id": "sidebar", "name": "Sidebar", "semantic_role": "PRIMARY_NAVIGATION", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-dashboard"], "confidence": 0.98, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "search-panel", "name": "Search Panel", "semantic_role": "CUSTOMER_SEARCH", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-list"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "search-button", "name": "Search Button", "semantic_role": "SEARCH_TRIGGER", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-search-button"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "customer-table", "name": "Customer Table", "semantic_role": "CUSTOMER_RESULTS", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-list"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "customer-form", "name": "Customer Form", "semantic_role": "CUSTOMER_EDITOR", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-detail"], "confidence": 0.97, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "consultation-form", "name": "Consultation Form", "semantic_role": "CONSULTATION_EDITOR", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-consultation"], "confidence": 0.99, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]}
+    ],
+    "actions": [
+      {"id": "search-customer", "name": "SearchCustomer", "action_type": "QUERY", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-search-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+      {"id": "open-customer", "name": "OpenCustomer", "action_type": "NAVIGATE", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-detail"], "confidence": 0.99, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "save-consultation", "name": "SaveConsultation", "action_type": "COMMAND", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-save-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]}
+    ],
+    "behaviors": [
+      {"id": "customer-search", "name": "CustomerSearch", "trigger_ref": "COMPONENT:search-button", "action_ref": "ACTION:search-customer", "result_refs": ["COMPONENT:customer-table", "DATA_ENTITY:customer"], "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-search-button", "EV-search-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+      {"id": "customer-open", "name": "CustomerOpen", "trigger_ref": "COMPONENT:customer-table", "action_ref": "ACTION:open-customer", "result_refs": ["SCREEN:customer-detail"], "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-customer-detail"], "confidence": 0.99, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+      {"id": "consultation-save", "name": "ConsultationSave", "trigger_ref": "COMPONENT:consultation-form", "action_ref": "ACTION:save-consultation", "result_refs": ["DATA_ENTITY:consultation-record"], "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-save-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]}
+    ],
+    "flows": [
+      {"id": "customer-flow", "name": "CustomerFlow", "behavior_refs": ["BEHAVIOR:customer-search", "BEHAVIOR:customer-open", "BEHAVIOR:consultation-save"], "origin": "USER", "truth": "USER_VERIFIED", "evidence_ids": ["EV-user-flow"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "ENTERED", "source_adapter": "USER", "source_ref": "DEC-verify-customer-flow"}]}
+    ],
+    "data_entities": [
+      {"id": "customer", "name": "Customer", "semantic_type": "BUSINESS_ENTITY", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-search-request"], "confidence": 0.96, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+      {"id": "consultation-record", "name": "Consultation Record", "semantic_type": "BUSINESS_ENTITY", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-save-request"], "confidence": 0.97, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]}
+    ],
+    "logic_rules": [
+      {"id": "customer-query-rule", "name": "Customer Query Requires Criteria", "condition": "At least one search criterion is present", "outcome": "Customer query is submitted", "origin": "ANALYSIS", "truth": "DERIVED", "evidence_ids": ["EV-search-button", "EV-search-request"], "confidence": 0.85, "verification_status": "UNVERIFIED", "provenance": [{"method": "DERIVED", "source_adapter": "RULE_ENGINE", "source_ref": "rule:query-correlation"}]}
+    ],
+    "protected_assets": [
+      {"id": "brand-logo", "name": "Original Brand Logo", "asset_type": "LOGO", "semantic_role": "PRIMARY_BRAND_MARK", "reuse_status": "PROTECTED", "replacement_strategy": "REPLACE", "origin": "ANALYSIS", "truth": "OBSERVED", "evidence_ids": ["EV-logo"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]}
+    ],
+    "oss_references": [
+      {"id": "oss-ui-library", "name": "Example UI Library", "package_name": "example-ui", "version": "1.0.0", "license": "MIT", "source": "package-metadata", "usage": "Interface components", "reuse_status": "UNKNOWN", "origin": "IMPORT", "truth": "OBSERVED", "evidence_ids": ["EV-package"], "confidence": 0.9, "verification_status": "UNVERIFIED", "provenance": [{"method": "IMPORTED", "source_adapter": "OSS_IMPORT", "source_ref": "package:example-ui@1.0.0"}]}
+    ]
+  },
+  "relations": [
+    {"relation_id": "REL-screen-search", "relation_type": "CONTAINS", "source_ref": "SCREEN:customer-list", "target_ref": "COMPONENT:search-panel", "origin": "ANALYSIS", "evidence_ids": ["EV-customer-list"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+    {"relation_id": "REL-panel-button", "relation_type": "CONTAINS", "source_ref": "COMPONENT:search-panel", "target_ref": "COMPONENT:search-button", "origin": "ANALYSIS", "evidence_ids": ["EV-search-button"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+    {"relation_id": "REL-search-trigger", "relation_type": "TRIGGERS", "source_ref": "COMPONENT:search-button", "target_ref": "ACTION:search-customer", "origin": "ANALYSIS", "evidence_ids": ["EV-search-button"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}]},
+    {"relation_id": "REL-action-behavior", "relation_type": "USES", "source_ref": "BEHAVIOR:customer-search", "target_ref": "ACTION:search-customer", "origin": "ANALYSIS", "evidence_ids": ["EV-search-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+    {"relation_id": "REL-behavior-flow", "relation_type": "PART_OF_FLOW", "source_ref": "BEHAVIOR:customer-search", "target_ref": "FLOW:customer-flow", "origin": "USER", "evidence_ids": ["EV-user-flow"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "ENTERED", "source_adapter": "USER"}]},
+    {"relation_id": "REL-behavior-read", "relation_type": "READS", "source_ref": "BEHAVIOR:customer-search", "target_ref": "DATA_ENTITY:customer", "origin": "ANALYSIS", "evidence_ids": ["EV-search-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+    {"relation_id": "REL-save-write", "relation_type": "WRITES", "source_ref": "BEHAVIOR:consultation-save", "target_ref": "DATA_ENTITY:consultation-record", "origin": "ANALYSIS", "evidence_ids": ["EV-save-request"], "confidence": 1, "verification_status": "VERIFIED", "provenance": [{"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}]},
+    {"relation_id": "REL-logo-replace", "relation_type": "REPLACES", "source_ref": "PROTECTED_ASSET:brand-logo", "target_ref": "PROTECTED_ASSET:brand-logo", "origin": "SANITIZER", "evidence_ids": ["EV-logo"], "confidence": 1, "verification_status": "UNVERIFIED", "provenance": [{"method": "SANITIZED", "source_adapter": "RULE_ENGINE", "source_ref": "sanitizer:protected-asset"}]}
+  ],
+  "evidence": [
+    {"evidence_id": "EV-program", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "PROGRAM:customer-care", "locator": {"scheme": "capture", "value": "root"}, "captured_at": "2026-08-29T05:40:00Z", "digest": "sha256:11111111", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-login", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "SCREEN:login", "locator": {"scheme": "semantic", "value": "login"}, "captured_at": "2026-08-29T05:41:00Z", "digest": "sha256:22222222", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-dashboard", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "SCREEN:dashboard", "locator": {"scheme": "semantic", "value": "dashboard"}, "captured_at": "2026-08-29T05:42:00Z", "digest": "sha256:33333333", "confidence": 0.98, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-customer-list", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "SCREEN:customer-list", "locator": {"scheme": "semantic", "value": "customer-list"}, "captured_at": "2026-08-29T05:43:00Z", "digest": "sha256:44444444", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-customer-detail", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "SCREEN:customer-detail", "locator": {"scheme": "semantic", "value": "customer-detail"}, "captured_at": "2026-08-29T05:44:00Z", "digest": "sha256:55555555", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-consultation", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "SCREEN:consultation", "locator": {"scheme": "semantic", "value": "consultation"}, "captured_at": "2026-08-29T05:45:00Z", "digest": "sha256:66666666", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-search-button", "type": "ACCESSIBILITY", "source_adapter": "WEB_ACCESSIBILITY", "subject_ref": "COMPONENT:search-button", "locator": {"scheme": "role-name", "value": "button:Search"}, "captured_at": "2026-08-29T05:46:00Z", "digest": "sha256:77777777", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_ACCESSIBILITY"}},
+    {"evidence_id": "EV-search-request", "type": "NETWORK", "source_adapter": "WEB_NETWORK", "subject_ref": "ACTION:search-customer", "locator": {"scheme": "request-signature", "value": "GET /customers"}, "captured_at": "2026-08-29T05:47:00Z", "digest": "sha256:88888888", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}},
+    {"evidence_id": "EV-save-request", "type": "NETWORK", "source_adapter": "WEB_NETWORK", "subject_ref": "ACTION:save-consultation", "locator": {"scheme": "request-signature", "value": "POST /consultations"}, "captured_at": "2026-08-29T05:48:00Z", "digest": "sha256:99999999", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "WEB_NETWORK"}},
+    {"evidence_id": "EV-logo", "type": "SCREENSHOT", "source_adapter": "VISION", "subject_ref": "PROTECTED_ASSET:brand-logo", "locator": {"scheme": "region", "value": "header-brand"}, "captured_at": "2026-08-29T05:49:00Z", "digest": "sha256:aaaaaaaa", "confidence": 1, "provenance": {"method": "OBSERVED", "source_adapter": "VISION"}},
+    {"evidence_id": "EV-package", "type": "SOURCE", "source_adapter": "OSS_IMPORT", "subject_ref": "OSS_REFERENCE:oss-ui-library", "locator": {"scheme": "package", "value": "example-ui@1.0.0"}, "captured_at": "2026-08-29T05:50:00Z", "digest": "sha256:bbbbbbbb", "confidence": 0.9, "provenance": {"method": "IMPORTED", "source_adapter": "OSS_IMPORT"}},
+    {"evidence_id": "EV-user-flow", "type": "USER", "source_adapter": "USER", "subject_ref": "FLOW:customer-flow", "locator": {"scheme": "decision", "value": "DEC-verify-customer-flow"}, "captured_at": "2026-08-29T06:05:00Z", "digest": "sha256:cccccccc", "confidence": 1, "provenance": {"method": "ENTERED", "source_adapter": "USER"}}
+  ],
+  "decisions": [
+    {"decision_id": "DEC-verify-customer-flow", "target_ref": "FLOW:customer-flow", "decision_type": "VERIFY", "previous_value": "UNVERIFIED", "new_value": "VERIFIED", "reason": "Reviewer confirmed the customer workflow", "user_verified": true, "user_source": {"actor_id": "reviewer-001", "channel": "REVIEW"}, "decided_at": "2026-08-29T06:05:00Z"}
+  ]
+}

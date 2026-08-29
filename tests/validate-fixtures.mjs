@@ -1,0 +1,109 @@
+import assert from "node:assert/strict";
+import { readFile, readdir } from "node:fs/promises";
+import path from "node:path";
+import process from "node:process";
+import { fileURLToPath } from "node:url";
+
+import { validateModel } from "./lib/model-validator.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const tests = [];
+
+function test(name, execute) {
+  tests.push({ name, execute });
+}
+
+async function readJson(relativePath) {
+  return JSON.parse(await readFile(path.join(root, relativePath), "utf8"));
+}
+
+test("schemas parse as JSON Schema 2020-12 contracts", async () => {
+  const files = [
+    "schemas/program-model.schema.json",
+    "schemas/observation.schema.json",
+    "schemas/evidence.schema.json",
+    "schemas/decision.schema.json"
+  ];
+  for (const file of files) {
+    const schema = await readJson(file);
+    assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+    assert.match(schema.$id, /^https:\/\/upre\.local\/schemas\//);
+    assert.equal(schema.type, "object");
+  }
+});
+
+test("schemas declare required entities, truth, state, evidence, and adapter contracts", async () => {
+  const programSchema = await readJson("schemas/program-model.schema.json");
+  const evidenceSchema = await readJson("schemas/evidence.schema.json");
+  const observationSchema = await readJson("schemas/observation.schema.json");
+  const decisionSchema = await readJson("schemas/decision.schema.json");
+  for (const definition of ["screen", "component", "action", "behavior", "flow", "dataEntity", "logicRule", "protectedAsset", "ossReference", "relation", "modelSnapshot", "modelRevision"]) assert(definition in programSchema.$defs);
+  assert.deepEqual(programSchema.$defs.truthClassification.enum, ["OBSERVED", "DERIVED", "INFERRED", "USER_VERIFIED", "CONFLICT"]);
+  assert(programSchema.$defs.modelSnapshot.allOf.some(({ if: condition }) => condition?.properties?.model_kind?.const === "ORIGINAL_MODEL"));
+  for (const field of ["evidence_id", "type", "source_adapter", "subject_ref", "locator", "captured_at", "digest", "confidence"]) assert(evidenceSchema.required.includes(field));
+  for (const adapter of ["WEB_DOM", "WINDOWS_UIA", "SOURCE_AST", "DOCUMENT", "RUNTIME", "USER"]) assert(observationSchema.$defs.sourceAdapter.enum.includes(adapter));
+  assert.equal(decisionSchema.properties.user_verified.const, true);
+});
+
+test("positive fixture passes structural and semantic validation", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  assert.deepEqual(validateModel(model), []);
+});
+
+test("positive fixture covers required entities and customer relation chain", async () => {
+  const model = await readJson("fixtures/sample-program-model.json");
+  const screenNames = new Set(model.entities.screens.map(({ name }) => name));
+  const componentNames = new Set(model.entities.components.map(({ name }) => name));
+  for (const name of ["Login", "Dashboard", "Customer List", "Customer Detail", "Consultation"]) assert(screenNames.has(name));
+  for (const name of ["Sidebar", "Search Panel", "Customer Table", "Customer Form", "Consultation Form"]) assert(componentNames.has(name));
+  const relationKeys = new Set(model.relations.map(({ relation_type, source_ref, target_ref }) => `${relation_type}|${source_ref}|${target_ref}`));
+  assert(relationKeys.has("TRIGGERS|COMPONENT:search-button|ACTION:search-customer"));
+  assert(relationKeys.has("USES|BEHAVIOR:customer-search|ACTION:search-customer"));
+  assert(relationKeys.has("PART_OF_FLOW|BEHAVIOR:customer-search|FLOW:customer-flow"));
+  assert(relationKeys.has("READS|BEHAVIOR:customer-search|DATA_ENTITY:customer"));
+  assert.equal(model.entities.logic_rules.length > 0, true);
+  assert.equal(model.entities.protected_assets.length > 0, true);
+  assert.equal(model.entities.oss_references.length > 0, true);
+  assert.equal(model.decisions.length > 0, true);
+  assert.equal(model.model_revisions.length, 3);
+});
+
+for (const [file, expectedCode] of [
+  ["neg-01-missing-screen-reference.json", "UNKNOWN_ENTITY_REFERENCE"],
+  ["neg-02-inferred-without-evidence.json", "INFERRED_REQUIRES_EVIDENCE_AND_INFERENCE_PROVENANCE"],
+  ["neg-03-original-model-mutable.json", "ORIGINAL_MODEL_MUST_BE_IMMUTABLE"]
+]) {
+  test(`${file} fails closed with ${expectedCode}`, async () => {
+    const fixture = await readJson(`fixtures/invalid/${file}`);
+    const codes = validateModel(fixture.program_model).map(({ code }) => code);
+    assert(codes.includes(expectedCode), `Expected ${expectedCode}; received ${codes.join(", ")}`);
+  });
+}
+
+test("core schemas contain no external viewer or editor vocabulary", async () => {
+  const schemaFiles = (await readdir(path.join(root, "schemas"))).filter((name) => name.endsWith(".json"));
+  const forbidden = ["archify", "reactflow", "playwright", "viewport", "renderer-only", "ui coordinate"];
+  for (const file of schemaFiles) {
+    const content = (await readFile(path.join(root, "schemas", file), "utf8")).toLowerCase();
+    for (const token of forbidden) assert.equal(content.includes(token), false, `${file} contains ${token}`);
+  }
+});
+
+let passed = 0;
+const failures = [];
+const startedAt = new Date().toISOString();
+
+for (const { name, execute } of tests) {
+  try {
+    await execute();
+    passed += 1;
+    console.log(`PASS ${name}`);
+  } catch (error) {
+    failures.push({ name, error });
+    console.error(`FAIL ${name}`);
+    console.error(error instanceof Error ? error.message : String(error));
+  }
+}
+
+console.log(JSON.stringify({ started_at: startedAt, finished_at: new Date().toISOString(), tests: tests.length, passed, failed: failures.length, not_run: 0 }));
+process.exitCode = failures.length === 0 ? 0 : 1;

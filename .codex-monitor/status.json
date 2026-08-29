@@ -1,7 +1,7 @@
 {
   "project": "UPRE-V0.10",
-  "phase": "PHASE-0A",
-  "slice": "BOOTSTRAP",
-  "status": "RUNNING",
-  "objective": "신규 Workspace 및 Git/Review 기반 초기화"
+  "phase": "PHASE-0B",
+  "slice": "SCHEMA_AND_FIXTURE",
+  "status": "REVIEW_READY",
+  "objective": "Program Model 계약, Fixture 및 실행 Validation 확정"
 }

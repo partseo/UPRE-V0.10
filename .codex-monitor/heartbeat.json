@@ -1,7 +1,7 @@
 {
   "project": "UPRE-V0.10",
-  "phase": "PHASE-0A",
-  "slice": "BOOTSTRAP",
-  "status": "RUNNING",
-  "last_event": "BOOTSTRAP_INITIALIZED"
+  "phase": "PHASE-0B",
+  "slice": "SCHEMA_AND_FIXTURE",
+  "status": "REVIEW_READY",
+  "last_event": "VALIDATION_PASS_8_OF_8"
 }

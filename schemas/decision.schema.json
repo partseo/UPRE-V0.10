@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://upre.local/schemas/decision.schema.json",
+  "title": "UPRE User Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision_id", "target_ref", "decision_type", "previous_value", "new_value", "reason", "user_verified", "user_source", "decided_at"],
+  "properties": {
+    "decision_id": {"type": "string", "pattern": "^DEC-[A-Za-z0-9._-]+$"},
+    "target_ref": {"$ref": "program-model.schema.json#/$defs/entityRef"},
+    "decision_type": {"enum": ["RENAME", "REJECT_INFERENCE", "CHANGE_RELATION", "MOVE_TO_WAREHOUSE", "RESTORE", "MERGE", "SPLIT", "VERIFY"]},
+    "previous_value": {},
+    "new_value": {},
+    "reason": {"type": "string", "minLength": 1},
+    "user_verified": {"const": true},
+    "user_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "channel"],
+      "properties": {
+        "actor_id": {"type": "string", "minLength": 1},
+        "channel": {"enum": ["VISUAL_EDITOR", "REVIEW", "IMPORT"]}
+      }
+    },
+    "decided_at": {"type": "string", "format": "date-time"}
+  }
+}

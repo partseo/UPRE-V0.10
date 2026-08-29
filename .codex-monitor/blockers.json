@@ -1,17 +1,13 @@
 {
   "project": "UPRE-V0.10",
-  "phase": "PHASE-0A",
-  "slice": "BOOTSTRAP",
-  "status": "RUNNING",
+  "phase": "PHASE-0B",
+  "slice": "SCHEMA_AND_FIXTURE",
+  "status": "REVIEW_READY",
   "blockers": [
     {
-      "gate": "GITHUB_REMOTE_DECISION",
+      "gate": "MASTER_REVIEW",
       "state": "HUMAN_REQUIRED",
-      "options": [
-        "Create a new GitHub repository named UPRE-V0.10",
-        "Connect an existing GitHub repository"
-      ],
-      "required_decision": "Public, Private, or existing repository"
+      "required_decision": "Approve or reject PHASE 0B before visualization/runtime work"
     }
   ]
 }

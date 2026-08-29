@@ -1,8 +1,10 @@
 {
   "project": "UPRE-V0.10",
-  "phase": "PHASE-0A",
-  "slice": "BOOTSTRAP",
-  "status": "RUNNING",
+  "phase": "PHASE-0B",
+  "slice": "SCHEMA_AND_FIXTURE",
+  "status": "PASS",
   "detected": false,
-  "items": []
+  "items": [],
+  "runtime_dependencies_installed": 0,
+  "analyzer_implementation": 0
 }

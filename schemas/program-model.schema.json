@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://upre.local/schemas/program-model.schema.json",
+  "title": "UPRE Program Model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "program", "snapshots", "model_revisions", "entities", "relations", "evidence", "decisions"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "program": {"$ref": "#/$defs/program"},
+    "snapshots": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/modelSnapshot"}},
+    "model_revisions": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/modelRevision"}},
+    "entities": {"$ref": "#/$defs/entityCollections"},
+    "relations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/relation"}},
+    "evidence": {"type": "array", "minItems": 1, "items": {"$ref": "evidence.schema.json"}},
+    "decisions": {"type": "array", "items": {"$ref": "decision.schema.json"}}
+  },
+  "$defs": {
+    "entityRef": {"type": "string", "pattern": "^(PROGRAM|SCREEN|COMPONENT|ACTION|BEHAVIOR|FLOW|DATA_ENTITY|LOGIC_RULE|PROTECTED_ASSET|OSS_REFERENCE|DECISION|RELATION):[A-Za-z0-9._-]+$"},
+    "truthClassification": {"enum": ["OBSERVED", "DERIVED", "INFERRED", "USER_VERIFIED", "CONFLICT"]},
+    "verificationStatus": {"enum": ["UNVERIFIED", "VERIFIED", "REJECTED", "CONFLICT"]},
+    "origin": {"enum": ["ANALYSIS", "USER", "IMPORT", "SANITIZER", "GENERATOR"]},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "source_adapter"],
+      "properties": {
+        "method": {"enum": ["OBSERVED", "EXTRACTED", "DERIVED", "INFERRED", "ENTERED", "IMPORTED", "SANITIZED"]},
+        "source_adapter": {"$ref": "observation.schema.json#/$defs/sourceAdapter"},
+        "source_ref": {"type": "string"},
+        "inference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "model", "inference_id", "confidence", "evidence_refs"],
+          "properties": {
+            "provider": {"type": "string", "minLength": 1},
+            "model": {"type": "string", "minLength": 1},
+            "inference_id": {"type": "string", "minLength": 1},
+            "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+            "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^EV-"}}
+          }
+        }
+      }
+    },
+    "entityMetadata": {
+      "type": "object",
+      "required": ["id", "name", "origin", "truth", "evidence_ids", "confidence", "verification_status", "provenance"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "origin": {"$ref": "#/$defs/origin"},
+        "truth": {"$ref": "#/$defs/truthClassification"},
+        "evidence_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^EV-"}},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "verification_status": {"$ref": "#/$defs/verificationStatus"},
+        "provenance": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/provenance"}}
+      }
+    },
+    "program": {
+      "allOf": [
+        {"$ref": "#/$defs/entityMetadata"},
+        {"type": "object", "required": ["program_type"], "properties": {"program_type": {"enum": ["WEB_APPLICATION", "WINDOWS_APPLICATION", "SOURCE_PROJECT", "DOCUMENT_SYSTEM", "RUNTIME_SYSTEM", "OTHER"]}}}
+      ]
+    },
+    "screen": {"allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["purpose"], "properties": {"purpose": {"type": "string"}}}]},
+    "component": {"allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["semantic_role"], "properties": {"semantic_role": {"type": "string"}}}]},
+    "action": {"allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["action_type"], "properties": {"action_type": {"type": "string"}}}]},
+    "behavior": {
+      "allOf": [
+        {"$ref": "#/$defs/entityMetadata"},
+        {"type": "object", "required": ["trigger_ref", "action_ref", "result_refs"], "properties": {"trigger_ref": {"$ref": "#/$defs/entityRef"}, "action_ref": {"$ref": "#/$defs/entityRef"}, "result_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entityRef"}}}}
+      ]
+    },
+    "flow": {
+      "allOf": [
+        {"$ref": "#/$defs/entityMetadata"},
+        {"type": "object", "required": ["behavior_refs"], "properties": {"behavior_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entityRef"}}}}
+      ]
+    },
+    "dataEntity": {"allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["semantic_type"], "properties": {"semantic_type": {"type": "string"}}}]},
+    "logicRule": {"allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["condition", "outcome"], "properties": {"condition": {"type": "string"}, "outcome": {"type": "string"}}}]},
+    "protectedAsset": {
+      "allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["asset_type", "semantic_role", "reuse_status", "replacement_strategy"], "properties": {"asset_type": {"type": "string"}, "semantic_role": {"type": "string"}, "reuse_status": {"enum": ["PROTECTED", "LICENSED", "UNKNOWN"]}, "replacement_strategy": {"enum": ["REPLACE", "REVIEW_REQUIRED", "REMOVE"]}}}]
+    },
+    "ossReference": {
+      "allOf": [{"$ref": "#/$defs/entityMetadata"}, {"type": "object", "required": ["package_name", "version", "license", "source", "usage", "reuse_status"], "properties": {"package_name": {"type": "string"}, "version": {"type": "string"}, "license": {"type": "string"}, "source": {"type": "string"}, "usage": {"type": "string"}, "reuse_status": {"enum": ["DIRECT_REUSE", "ADAPTER", "REFERENCE", "REPLACE", "UNKNOWN"]}}}]
+    },
+    "entityCollections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screens", "components", "actions", "behaviors", "flows", "data_entities", "logic_rules", "protected_assets", "oss_references"],
+      "properties": {
+        "screens": {"type": "array", "items": {"$ref": "#/$defs/screen"}},
+        "components": {"type": "array", "items": {"$ref": "#/$defs/component"}},
+        "actions": {"type": "array", "items": {"$ref": "#/$defs/action"}},
+        "behaviors": {"type": "array", "items": {"$ref": "#/$defs/behavior"}},
+        "flows": {"type": "array", "items": {"$ref": "#/$defs/flow"}},
+        "data_entities": {"type": "array", "items": {"$ref": "#/$defs/dataEntity"}},
+        "logic_rules": {"type": "array", "items": {"$ref": "#/$defs/logicRule"}},
+        "protected_assets": {"type": "array", "items": {"$ref": "#/$defs/protectedAsset"}},
+        "oss_references": {"type": "array", "items": {"$ref": "#/$defs/ossReference"}}
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_id", "relation_type", "source_ref", "target_ref", "origin", "evidence_ids", "confidence", "verification_status", "provenance"],
+      "properties": {
+        "relation_id": {"type": "string", "pattern": "^REL-"},
+        "relation_type": {"enum": ["CONTAINS", "TRIGGERS", "NAVIGATES_TO", "READS", "WRITES", "DISPLAYS", "USES", "DEPENDS_ON", "PART_OF_FLOW", "SUPPORTED_BY", "DERIVED_FROM", "REPLACES"]},
+        "source_ref": {"$ref": "#/$defs/entityRef"},
+        "target_ref": {"$ref": "#/$defs/entityRef"},
+        "origin": {"$ref": "#/$defs/origin"},
+        "evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^EV-"}},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "verification_status": {"$ref": "#/$defs/verificationStatus"},
+        "provenance": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/provenance"}}
+      }
+    },
+    "modelSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_id", "model_kind", "based_on_snapshot_id", "immutable", "entity_refs", "relation_refs", "created_at"],
+      "properties": {
+        "snapshot_id": {"type": "string", "pattern": "^SNAP-"},
+        "model_kind": {"enum": ["ORIGINAL_MODEL", "WORKING_MODEL", "GENERATED_MODEL"]},
+        "based_on_snapshot_id": {"type": ["string", "null"]},
+        "immutable": {"type": "boolean"},
+        "entity_refs": {"type": "array", "items": {"$ref": "#/$defs/entityRef"}},
+        "relation_refs": {"type": "array", "items": {"type": "string", "pattern": "^REL-"}},
+        "sanitizer_status": {"enum": ["CLEAN", "REVIEW_REQUIRED", "BLOCKED"]},
+        "created_at": {"type": "string", "format": "date-time"}
+      },
+      "allOf": [
+        {"if": {"properties": {"model_kind": {"const": "ORIGINAL_MODEL"}}}, "then": {"properties": {"immutable": {"const": true}, "based_on_snapshot_id": {"type": "null"}}}},
+        {"if": {"properties": {"model_kind": {"const": "WORKING_MODEL"}}}, "then": {"properties": {"immutable": {"const": false}, "based_on_snapshot_id": {"type": "string"}}}},
+        {"if": {"properties": {"model_kind": {"const": "GENERATED_MODEL"}}}, "then": {"required": ["sanitizer_status"], "properties": {"immutable": {"const": true}, "based_on_snapshot_id": {"type": "string"}}}}
+      ]
+    },
+    "modelRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision_id", "snapshot_id", "parent_revision_id", "change_source", "created_at"],
+      "properties": {
+        "revision_id": {"type": "string", "pattern": "^REV-"},
+        "snapshot_id": {"type": "string", "pattern": "^SNAP-"},
+        "parent_revision_id": {"type": ["string", "null"]},
+        "change_source": {"enum": ["ANALYSIS", "USER_DECISION", "SANITIZER"]},
+        "created_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

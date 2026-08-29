@@ -1,11 +1,30 @@
-# SMALL V0.1 Scope
+# SMALL V0.1 Scope and PHASE 0B Gate
 
-STATUS: DRAFT
+STATUS: REVIEW_READY
 
-PHASE: PHASE-0
+PHASE: PHASE-0B
 
-NOT IMPLEMENTED
+이번 Phase는 문서, Core JSON Schema, sample fixture, 3개 invalid fixture, dependency-free validator 및 실행 receipt만 포함한다.
 
-목적: SMALL V0.1의 vertical slice, acceptance, 제외 범위 및 scope guard를 정의한다.
+| Gate | Criterion | Evidence |
+| --- | --- | --- |
+| G01 | Universal Program Model | Web/Windows/Source/Document/Runtime 수용 |
+| G02 | UI/Behavior/Flow/Data separation | 독립 collection과 ID reference |
+| G03 | Truth classification | 5개 상태와 semantic rule |
+| G04 | Model state separation | snapshot/revision 및 immutability negative test |
+| G05 | Archify independence | Core schema isolation scan |
+| G06 | React Flow independence | isolation scan과 reverse command contract |
+| G07 | Adapter extensibility | source adapter categories |
+| G08 | Evidence/Asset/OSS extensibility | 독립 entities와 provenance |
+| G09 | Fixture relationship coverage | required entities, chain, supporting evidence |
+| G10 | Executed validation | `node tests/validate-fixtures.mjs`, exit 0, 7/7 |
 
-상세 범위 설계는 PHASE 0A 범위가 아니며 후속 승인 전까지 작성하지 않는다.
+하나라도 실패하면 PHASE 0B는 FAIL이다. G05, G06, G10은 Critical이다.
+
+## Explicitly Not Implemented
+
+Archify Runtime, React Flow Runtime, Playwright, Tree-sitter, ast-grep, Joern, Neo4j, Kuzu, Qdrant, Local LLM, Windows UIA, Vision Analyzer, Generator 및 실제 target 분석은 설치하거나 구현하지 않는다.
+
+## Next Gate
+
+MASTER 승인 전에는 sample Program Model 시각화 단계로 진행하지 않는다.
