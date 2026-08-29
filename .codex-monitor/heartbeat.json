@@ -1,0 +1,7 @@
+{
+  "project": "UPRE-V0.10",
+  "phase": "PHASE-0A",
+  "slice": "BOOTSTRAP",
+  "status": "RUNNING",
+  "last_event": "BOOTSTRAP_INITIALIZED"
+}

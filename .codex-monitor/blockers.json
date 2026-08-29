@@ -1,0 +1,17 @@
+{
+  "project": "UPRE-V0.10",
+  "phase": "PHASE-0A",
+  "slice": "BOOTSTRAP",
+  "status": "RUNNING",
+  "blockers": [
+    {
+      "gate": "GITHUB_REMOTE_DECISION",
+      "state": "HUMAN_REQUIRED",
+      "options": [
+        "Create a new GitHub repository named UPRE-V0.10",
+        "Connect an existing GitHub repository"
+      ],
+      "required_decision": "Public, Private, or existing repository"
+    }
+  ]
+}

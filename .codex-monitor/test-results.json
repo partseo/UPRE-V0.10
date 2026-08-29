@@ -1,0 +1,19 @@
+{
+  "project": "UPRE-V0.10",
+  "phase": "PHASE-0A",
+  "slice": "BOOTSTRAP",
+  "status": "RUNNING",
+  "acceptance": [
+    {"id": "T01", "result": "PASS", "evidence": "git rev-parse --is-inside-work-tree"},
+    {"id": "T02", "result": "PASS", "evidence": "git symbolic-ref --short HEAD returned main"},
+    {"id": "T03", "result": "PASS", "evidence": "required directory existence check returned no missing paths"},
+    {"id": "T04", "result": "PASS", "evidence": "docs/MASTER_DIRECTIVE.md exists and preserves the immutable pipeline"},
+    {"id": "T05", "result": "PASS", "evidence": "all ten .codex-monitor files exist"},
+    {"id": "T06", "result": "PASS", "evidence": ".gitignore exists with credential, build, cache, temporary, OS, and IDE exclusions"},
+    {"id": "T07", "result": "PASS", "evidence": "staged secret filename count 0 and credential pattern hits 0"},
+    {"id": "T08", "result": "PASS", "evidence": "11 OSS candidates registered with NOT_REVIEWED status"},
+    {"id": "T09", "result": "PASS", "evidence": "baseline commit resolves at HEAD during final verification"},
+    {"id": "T10", "result": "PASS", "evidence": "source or project manifest count 0"}
+  ],
+  "feature_tests": "NOT RUN: implementation has not started"
+}

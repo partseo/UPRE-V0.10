@@ -1,0 +1,37 @@
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.pfx
+
+# JavaScript
+node_modules/
+dist/
+build/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+
+# Codex local state
+.codex/
+.codex-cache/
+
+# Temporary and log files
+tmp/
+temp/
+*.log
+
+# Operating systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
